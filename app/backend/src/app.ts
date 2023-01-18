@@ -1,5 +1,6 @@
 import * as express from 'express';
-import routerLogin from './database/routers/routerUsers';
+import routerLogin from './routers/routerUsers';
+import routerTeam from './routers/routerTeams';
 
 class App {
   public app: express.Express;
@@ -11,7 +12,6 @@ class App {
 
     // Não remover essa rota
     this.app.get('/', (req, res) => res.json({ ok: true }));
-    this.app.use('/login', routerLogin);
   }
 
   private config():void {
@@ -24,6 +24,9 @@ class App {
 
     this.app.use(express.json());
     this.app.use(accessControl);
+    this.app.use('/login', routerLogin);
+    this.app.use('/login/validate', routerLogin);
+    this.app.use('/teams', routerTeam);
   }
 
   public start(PORT: string | number):void {
