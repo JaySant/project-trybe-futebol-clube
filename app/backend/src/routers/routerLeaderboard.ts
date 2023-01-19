@@ -4,6 +4,7 @@ import LeaderController from '../controllers/LeaderControllers';
 const leaderboard = new LeaderController();
 const router = Router();
 
+router.get('/', (req, res) => leaderboard.getAllLeader(req, res));
 router.get('/home', (req, res) => leaderboard.getLeaderHome(req, res));
 router.get('/away', (req, res) => leaderboard.getLeaderAway(req, res));
 

@@ -42,6 +42,37 @@ export default class LeaderBoardService {
     return LeaderBoardService.sortPoints(points);
   }
 
+  public async getLeaderboardAll() {
+    const allboard = await Promise.all(
+      [...await this.getLeaderboardHome(), ...await this.getLeaderboardAway()],
+    );
+    const boardReduce = LeaderBoardService.sumPointsHomeandAway(allboard);
+    // console.log(allboard);
+    // console.log(boardReduce);
+    return LeaderBoardService.sortPoints(boardReduce);
+  }
+
+  public static sumPointsHomeandAway(matches: ILeaderBoard[]) {
+    const score = matches.reduce((acc, cur) => {
+      const find = acc.find((el) => el.name === cur.name);
+      if (find) {
+        find.totalPoints += cur.totalPoints;
+        find.totalGames += cur.totalGames;
+        find.totalVictories += cur.totalVictories;
+        find.totalDraws += cur.totalDraws;
+        find.totalLosses += cur.totalLosses;
+        find.goalsFavor += cur.goalsFavor;
+        find.goalsOwn += cur.goalsOwn;
+        find.goalsBalance += cur.goalsBalance;
+        find.efficiency = ((find.totalPoints / (find.totalGames * 3)) * 100).toFixed(2);
+      } else {
+        acc.push(cur);
+      }
+      return acc;
+    }, [] as ILeaderBoard[]);
+    return score;
+  }
+
   public static sortPoints = (board: ILeaderBoard[]): ILeaderBoard[] => {
     const pointsBoard = board.sort((a, b) => {
       if (a.totalPoints !== b.totalPoints) return b.totalPoints - a.totalPoints;
