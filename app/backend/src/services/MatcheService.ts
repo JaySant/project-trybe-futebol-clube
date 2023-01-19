@@ -1,8 +1,10 @@
 import TeamsModel from '../database/models/TeamsModel';
 import MatchesModel from '../database/models/MatchesModel';
+import { IMatches } from '../interfaces/IMatches';
 
 export default class MatchesService {
   public matches = MatchesModel;
+  public teams = TeamsModel;
 
   public async findMatches(): Promise<MatchesModel[] | undefined> {
     const getAllMatches = await this.matches.findAll({
@@ -14,7 +16,6 @@ export default class MatchesService {
   }
 
   public async findProgress(query: boolean): Promise<MatchesModel[] | undefined> {
-    // console.log(query);
     const findAllMatches = await this.matches.findAll({
       where: { inProgress: query },
       include: [
@@ -22,5 +23,17 @@ export default class MatchesService {
         { model: TeamsModel, as: 'teamAway', attributes: { exclude: ['id'] } },
       ] });
     return findAllMatches;
+  }
+
+  public async createMatche(matchesData: IMatches): Promise<MatchesModel | boolean> {
+    const getTeams = await this.teams.findAll();
+    const verifyHomeTeam = getTeams.some(({ id }) => matchesData.homeTeam === id);
+    const verifyAwayTeam = getTeams.some(({ id }) => matchesData.awayTeam === id);
+
+    if (!verifyAwayTeam || !verifyHomeTeam) {
+      return false;
+    }
+    const create = await this.matches.create({ ...matchesData, inProgress: true });
+    return create;
   }
 }
