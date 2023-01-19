@@ -1,6 +1,7 @@
 import TeamsModel from '../database/models/TeamsModel';
 import MatchesModel from '../database/models/MatchesModel';
 import { IMatches } from '../interfaces/IMatches';
+import { response } from '../interfaces/IResponse';
 
 export default class MatchesService {
   public matches = MatchesModel;
@@ -25,15 +26,24 @@ export default class MatchesService {
     return findAllMatches;
   }
 
-  public async createMatche(matchesData: IMatches): Promise<MatchesModel | boolean> {
-    const getTeams = await this.teams.findAll();
-    const verifyHomeTeam = getTeams.some(({ id }) => matchesData.homeTeam === id);
-    const verifyAwayTeam = getTeams.some(({ id }) => matchesData.awayTeam === id);
-
-    if (!verifyAwayTeam || !verifyHomeTeam) {
-      return false;
+  public async createMatche(matchesData: IMatches): Promise<response> {
+    const { awayTeam, awayTeamGoals, homeTeam, homeTeamGoals } = matchesData;
+    if (awayTeam === homeTeam) {
+      return { status: 422, response: 'It is not possible to create a match with two equal teams' };
     }
-    const create = await this.matches.create({ ...matchesData, inProgress: true });
-    return create;
+    const getHome = await this.teams.findByPk(homeTeam);
+    const getAwayTeam = await this.teams.findByPk(awayTeam);
+
+    if (!getHome || !getAwayTeam) {
+      return { status: 404, response: 'There is no team with such id!' };
+    }
+    const create = await this.matches
+      .create({ awayTeam, awayTeamGoals, homeTeam, homeTeamGoals, inProgress: true });
+    return { status: null, response: create };
+  }
+
+  public async updateMatches(id: string): Promise<response> {
+    await this.matches.update({ inProgress: false }, { where: { id } });
+    return { message: 'Finished' };
   }
 }

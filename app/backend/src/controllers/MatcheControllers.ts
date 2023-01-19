@@ -20,18 +20,17 @@ export default class MatchesControllers {
   }
 
   async createMatches(req: Request, res: Response) {
-    const { homeTeam, awayTeam, awayTeamGoals, homeTeamGoals } = req.body;
-
-    const dataMatch = await this.matcheService
-      .createMatche({ homeTeam, awayTeam, awayTeamGoals, homeTeamGoals });
-    if (homeTeam === awayTeam) {
-      return res.status(422)
-        .json({ message: 'It is not possible to create a match with two equal teams' });
+    const create = await this.matcheService
+      .createMatche(req.body);
+    if (create.status) {
+      return res.status(create.status as number).json({ message: create.response });
     }
+    return res.status(201).json(create.response);
+  }
 
-    if (!dataMatch) {
-      return res.status(404).json({ message: 'There is no team with such id!' });
-    }
-    return res.status(201).json(dataMatch);
+  async uptadeMatches(req: Request, res: Response) {
+    const { id } = req.params;
+    const updateFinish = await this.matcheService.updateMatches(id as string);
+    res.status(200).json(updateFinish);
   }
 }

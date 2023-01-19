@@ -1,3 +1,3 @@
 export interface response {
-  [key: string]: string | number | null
+  [key: string]: string | number | null | object
 }
