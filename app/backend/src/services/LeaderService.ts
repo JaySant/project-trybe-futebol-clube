@@ -2,7 +2,8 @@ import ILeaderBoard from '../interfaces/ILeaderBoard';
 import Matches from '../database/models/MatchesModel';
 import MatchesService from './MatcheService';
 import TeamsService from './TeamService';
-import leaderBoardHome from '../utils.ts/leaderBoardHome';
+import leaderBoardHome from '../utils/leaderBoardHome';
+import leaderBoardAway from '../utils/leaderBoardAway';
 
 export default class LeaderBoardService {
   matches = Matches;
@@ -27,6 +28,16 @@ export default class LeaderBoardService {
 
     const points = await Promise.all(teams.map((team) => (
       leaderBoardHome(this.objLeaderBoard, team, match)
+    )));
+    return LeaderBoardService.sortPoints(points);
+  }
+
+  public async getLeaderboardAway() {
+    const teams = await this.teamsService.findTeam();
+    const match = await this.matchesService.findProgress(false);
+
+    const points = await Promise.all(teams.map((team) => (
+      leaderBoardAway(this.objLeaderBoard, team, match)
     )));
     return LeaderBoardService.sortPoints(points);
   }
