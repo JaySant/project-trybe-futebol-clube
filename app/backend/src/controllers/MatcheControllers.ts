@@ -36,7 +36,7 @@ export default class MatchesControllers {
 
   async updateGoals(req: Request, res: Response) {
     const { id } = req.params;
-    await this.matcheService.updateGoals(id as string, req.body);
-    res.status(200).json();
+    const update = await this.matcheService.updateGoals(id as string, req.body);
+    res.status(200).json({ update });
   }
 }

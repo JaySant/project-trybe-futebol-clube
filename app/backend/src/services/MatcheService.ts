@@ -50,6 +50,6 @@ export default class MatchesService {
   public async updateGoals(id: string, { homeTeamGoals, awayTeamGoals }:
   { [key: string]: number }): Promise<response> {
     await this.matches.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
-    return { status: null, response: null };
+    return { status: 200, response: 'update success' };
   }
 }
