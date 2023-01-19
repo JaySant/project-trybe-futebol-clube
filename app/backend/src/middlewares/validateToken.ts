@@ -11,7 +11,7 @@ export default function auth(req: Request, res: Response, next: NextFunction) {
     const token = jwt.verify(authorization as string, process.env.JWT_SECRET as string);
     req.body.user = token;
   } catch (error) {
-    const e = res.status(401).json({ message: 'Token must be a valid token'});
+    const e = res.status(401).json({ message: 'Token must be a valid token' });
     next(e);
   }
 }
