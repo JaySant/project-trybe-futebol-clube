@@ -16,7 +16,7 @@ export default class MatchesService {
     return getAllMatches;
   }
 
-  public async findProgress(query: boolean): Promise<MatchesModel[] | undefined> {
+  public async findProgress(query: boolean): Promise<IMatches[]> {
     const findAllMatches = await this.matches.findAll({
       where: { inProgress: query },
       include: [
